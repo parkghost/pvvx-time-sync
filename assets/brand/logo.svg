@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 512" width="1500" height="512">
+  <svg x="0" y="0" width="512" height="512" viewBox="0 0 512 512">
+  <path d="M316.7,84.1 A172,172 0 1 1 139.8,93.4" fill="none"
+        stroke="#1E88E5" stroke-width="46" stroke-linecap="round"/>
+  <path d="M187.9,61.0 L100.2,45.4 L169.5,148.2 Z"
+        fill="#1E88E5" stroke="#1E88E5" stroke-width="10" stroke-linejoin="round"/>
+  <g stroke="#263238" stroke-linecap="round">
+    <line x1="236" y1="236" x2="324.0" y2="236.0" stroke-width="40"/>
+    <line x1="236" y1="236" x2="236.0" y2="112.0" stroke-width="30"/>
+  </g>
+  <circle cx="236" cy="236" r="26" fill="#263238"/>
+  <circle cx="396" cy="396" r="118" fill="#FFFFFF"/>
+  <circle cx="396" cy="396" r="100" fill="#1E88E5"/>
+  <path d="M366,366 L426,422 L396,452 L396,340 L426,370 L366,426" fill="none" stroke="#FFFFFF" stroke-width="17"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+  <text x="560" y="238" font-family="Inter" font-weight="800" font-size="200" fill="#1E88E5">pvvx</text>
+  <text x="566" y="420" font-family="Inter" font-weight="600" font-size="150" fill="#263238">Time Sync</text>
+</svg>

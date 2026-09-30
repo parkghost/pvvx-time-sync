@@ -1,0 +1,91 @@
+[project]
+name = "pvvx-time-sync"
+version = "0.1.0"
+description = "Home Assistant integration that syncs the clock of pvvx-firmware BLE devices"
+requires-python = ">=3.14.2"
+
+[dependency-groups]
+dev = [
+    "aiousbwatcher==1.1.2",
+    "bleak==3.0.2",
+    "bleak-retry-connector==4.7.0",
+    "bluetooth-adapters==2.4.0",
+    "bluetooth-auto-recovery==1.6.4",
+    "bluetooth-data-tools==1.29.24",
+    "commitizen>=4.19.0",
+    "dbus-fast==5.0.22",
+    "habluetooth==6.26.11",
+    "pre-commit>=4.6.2",
+    "pyright>=1.1.414",
+    "pytest-cov>=7.1.0",
+    "pytest-homeassistant-custom-component==0.13.367",
+    "ruff",
+    "serialx==1.10.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py314"
+
+# Based on https://github.com/ludeeus/integration_blueprint/blob/main/.ruff.toml
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
+    "D203",   # no-blank-line-before-class (incompatible with formatter)
+    "D213",   # multi-line-summary-second-line: HA core puts the summary first
+    "COM812", # incompatible with formatter
+    "ISC001", # incompatible with formatter
+    "CPY001", # no per-file copyright headers; see LICENSE
+    "TC001",  # HA resolves some annotations at runtime; keep imports real
+    "TC002",
+    "TC003",
+    "ARG001", # platform and callback signatures are fixed by HA
+    "ARG002",
+    "EM101",  # HA core style: messages inline in exceptions
+    "EM102",
+    "TRY003",
+    "S101",   # asserts narrow types, as in HA core
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "S101",    # assert is how pytest checks
+    "PLR2004", # expected values are literals in tests
+    "SLF001",  # tests drive private callbacks directly
+    "D",       # test names document the tests
+    "ANN",     # fixtures and fakes stay lightweight
+    "PLR0913", # the fake device takes its behaviour as arguments
+    "FBT",
+]
+"assets/**" = ["INP001", "T201", "D", "ANN", "E501", "PLR2004"]  # SVG generator script
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["homeassistant"]
+combine-as-imports = true
+
+[tool.pyright]
+pythonVersion = "3.14"
+venvPath = "."
+venv = ".venv"
+include = ["custom_components"]
+typeCheckingMode = "standard"
+# HA entities override properties declared as cached_property and narrow
+# entity_description; HA core type-checks with mypy, which accepts this.
+reportIncompatibleVariableOverride = "none"
+
+[tool.commitizen]
+version = "0.1.0"
+version_files = [
+    "pyproject.toml:version",
+    "custom_components/pvvx_time_sync/manifest.json:version",
+]
+tag_format = "$version"
+annotated_tag = true
+update_changelog_on_bump = false
+pre_bump_hooks = ["uv lock", "git add uv.lock"]
+major_version_zero = true

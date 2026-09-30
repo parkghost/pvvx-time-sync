@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a bug with pvvx BLE Time Sync
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Before you open a new issue, search the existing issues to see if someone already reported it.
+  - type: textarea
+    attributes:
+      label: System Health details
+      description: Paste the data from the System Health card in Home Assistant (https://www.home-assistant.io/more-info/system-health#github-issues).
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Device model and pvvx firmware version
+      description: Shown on the time sync device page after the first sync, e.g. MJWSD05MMC, 5.4.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Bluetooth adapter or proxy
+      description: e.g. ESPHome Bluetooth proxy on an ESP32 (ESPHome 2026.9), or a local USB adapter.
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have enabled debug logging for `custom_components.pvvx_time_sync` and `bleak_retry_connector`.
+          required: true
+        - label: This issue contains only one issue.
+          required: true
+        - label: This issue is not a duplicate of an [existing issue](https://github.com/parkghost/pvvx-time-sync/issues).
+          required: true
+  - type: textarea
+    attributes:
+      label: Describe the issue
+      description: What happened, and what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Debug logs
+      description: Include everything from the start of the sync to the error (https://www.home-assistant.io/integrations/logger/).
+      render: text
+    validations:
+      required: true

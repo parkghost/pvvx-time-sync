@@ -1,0 +1,56 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "bluetooth_confirm": {
+        "description": "要加入 {name} 嗎？首次時間同步時會確認裝置是否執行 pvvx 韌體。"
+      },
+      "user": {
+        "description": "選擇附近的裝置。首次時間同步時會確認裝置是否執行 pvvx 韌體。",
+        "data": {
+          "address": "裝置"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "裝置已設定",
+      "no_devices_found": "附近找不到可連線的 pvvx 裝置"
+    }
+  },
+  "entity": {
+    "button": {
+      "sync_time": {
+        "name": "同步時間"
+      }
+    },
+    "switch": {
+      "auto_sync": {
+        "name": "自動同步"
+      }
+    },
+    "sensor": {
+      "last_sync": {
+        "name": "上次同步"
+      },
+      "drift": {
+        "name": "同步前誤差"
+      }
+    },
+    "number": {
+      "interval": {
+        "name": "自動同步間隔"
+      }
+    }
+  },
+  "issues": {
+    "not_pvvx": {
+      "title": "{name} 沒有執行 pvvx 韌體",
+      "description": "{name} 的時間同步已停止：此裝置沒有執行具備指令服務（0x1F10）的 pvvx 韌體。最後錯誤：{error}\n\n請移除此項目，或刷入 pvvx 韌體後重新載入。"
+    }
+  },
+  "exceptions": {
+    "sync_failed": {
+      "message": "{name} 時間同步失敗：{error}"
+    }
+  }
+}

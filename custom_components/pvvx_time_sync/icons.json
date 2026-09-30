@@ -1,0 +1,30 @@
+{
+  "entity": {
+    "button": {
+      "sync_time": {
+        "default": "mdi:timer-sync"
+      }
+    },
+    "switch": {
+      "auto_sync": {
+        "default": "mdi:clock-check-outline",
+        "state": {
+          "off": "mdi:clock-remove-outline"
+        }
+      }
+    },
+    "number": {
+      "interval": {
+        "default": "mdi:calendar-sync"
+      }
+    },
+    "sensor": {
+      "last_sync": {
+        "default": "mdi:clock-check"
+      },
+      "drift": {
+        "default": "mdi:clock-alert-outline"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "bluetooth_confirm": {
+        "description": "Add {name}? The device is checked for pvvx firmware during its first time sync."
+      },
+      "user": {
+        "description": "Pick a nearby device. It is checked for pvvx firmware during its first time sync.",
+        "data": {
+          "address": "Device"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Device is already configured",
+      "no_devices_found": "No connectable pvvx candidates found nearby"
+    }
+  },
+  "entity": {
+    "button": {
+      "sync_time": {
+        "name": "Sync time"
+      }
+    },
+    "switch": {
+      "auto_sync": {
+        "name": "Auto sync"
+      }
+    },
+    "sensor": {
+      "last_sync": {
+        "name": "Last sync"
+      },
+      "drift": {
+        "name": "Drift before sync"
+      }
+    },
+    "number": {
+      "interval": {
+        "name": "Auto sync interval"
+      }
+    }
+  },
+  "issues": {
+    "not_pvvx": {
+      "title": "{name} does not run pvvx firmware",
+      "description": "Time sync with {name} stopped: the device does not run pvvx firmware with the command service (0x1F10). Last error: {error}\n\nRemove this entry, or flash pvvx firmware and reload it."
+    }
+  },
+  "exceptions": {
+    "sync_failed": {
+      "message": "Time sync with {name} failed: {error}"
+    }
+  }
+}
