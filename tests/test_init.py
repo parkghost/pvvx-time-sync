@@ -120,6 +120,44 @@ async def test_first_auto_sync_runs_shortly_after_setup(
     assert sync_time.await_count == 2
 
 
+async def test_next_sync_follows_schedule(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, sync_time: AsyncMock
+) -> None:
+    await setup(hass)
+    next_sync = entity_id(hass, "sensor", "next_sync")
+
+    def scheduled() -> str:
+        return hass.states.get(next_sync).state
+
+    def from_now(delta: timedelta) -> str:
+        # Timestamp sensors drop microseconds.
+        return (dt_util.utcnow() + delta).replace(microsecond=0).isoformat()
+
+    assert scheduled() == from_now(timedelta(seconds=30))
+
+    await advance(hass, freezer, timedelta(seconds=31))
+    assert scheduled() == from_now(timedelta(hours=168))
+
+    # A failure shows the retry time.
+    sync_time.side_effect = TimeoutError("out of range")
+    with pytest.raises(HomeAssistantError):
+        await hass.services.async_call(
+            "button",
+            "press",
+            {"entity_id": entity_id(hass, "button", "sync_time")},
+            blocking=True,
+        )
+    assert scheduled() == from_now(timedelta(minutes=15))
+
+    await hass.services.async_call(
+        "switch",
+        "turn_off",
+        {"entity_id": entity_id(hass, "switch", "auto_sync")},
+        blocking=True,
+    )
+    assert scheduled() == STATE_UNKNOWN
+
+
 async def test_button_syncs_and_reports_failures(
     hass: HomeAssistant, sync_time: AsyncMock
 ) -> None:

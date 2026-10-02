@@ -45,6 +45,7 @@ integration; this integration adds a time sync device next to it.
 | `switch` Auto sync | Enable the built-in schedule |
 | `number` Auto sync interval | Hours between automatic syncs |
 | `sensor` Last sync | Time of the last successful sync |
+| `sensor` Next sync | Time of the next automatic sync or retry; unknown while *Auto sync* is off or has stopped |
 | `sensor` Drift before sync | Device clock minus real time, in seconds, measured just before the last sync |
 
 Each device gets its own device entry named after the BTHome device for the

@@ -32,6 +32,9 @@
       "last_sync": {
         "name": "Last sync"
       },
+      "next_sync": {
+        "name": "Next sync"
+      },
       "drift": {
         "name": "Drift before sync"
       }

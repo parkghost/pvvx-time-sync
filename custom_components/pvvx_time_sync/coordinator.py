@@ -114,6 +114,8 @@ class PvvxCoordinator(DataUpdateCoordinator[SyncState]):
         self._not_pvvx_strikes = 0
         self._stopped = False
         self.present = False
+        # When the auto sync timer fires next; None while none is scheduled.
+        self.next_sync: datetime | None = None
         self.data = SyncState()
 
     @property
@@ -252,12 +254,17 @@ class PvvxCoordinator(DataUpdateCoordinator[SyncState]):
     @callback
     def _reschedule(self) -> None:
         self._cancel()
+        next_sync: datetime | None = None
         if self._stopped or not self.data.auto_enabled or self.gave_up:
             _LOGGER.debug("%s: no auto sync scheduled", self.name)
-            return
-        delay, reason = self._next_delay()
-        _LOGGER.debug("%s: next auto sync in %s (%s)", self.name, delay, reason)
-        self._cancel_timer = async_call_later(self.hass, delay, self._on_timer)
+        else:
+            delay, reason = self._next_delay()
+            _LOGGER.debug("%s: next auto sync in %s (%s)", self.name, delay, reason)
+            self._cancel_timer = async_call_later(self.hass, delay, self._on_timer)
+            next_sync = dt_util.utcnow() + delay
+        if next_sync != self.next_sync:
+            self.next_sync = next_sync
+            self.async_update_listeners()
 
     def _next_delay(self) -> tuple[timedelta, str]:
         if self._failures:

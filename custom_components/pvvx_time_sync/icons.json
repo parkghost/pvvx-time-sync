@@ -22,6 +22,9 @@
       "last_sync": {
         "default": "mdi:clock-check"
       },
+      "next_sync": {
+        "default": "mdi:clock-start"
+      },
       "drift": {
         "default": "mdi:clock-alert-outline"
       }

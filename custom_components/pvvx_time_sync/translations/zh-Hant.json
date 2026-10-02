@@ -32,6 +32,9 @@
       "last_sync": {
         "name": "上次同步"
       },
+      "next_sync": {
+        "name": "下次同步"
+      },
       "drift": {
         "name": "同步前誤差"
       }

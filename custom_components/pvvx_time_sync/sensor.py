@@ -16,7 +16,7 @@ from homeassistant.const import EntityCategory, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import PvvxConfigEntry, PvvxCoordinator, SyncState
+from .coordinator import PvvxConfigEntry, PvvxCoordinator
 from .entity import PvvxEntity
 
 
@@ -24,7 +24,7 @@ from .entity import PvvxEntity
 class PvvxSensorDescription(SensorEntityDescription):
     """Describes a sensor derived from the sync state."""
 
-    value_fn: Callable[[SyncState], datetime | int | None]
+    value_fn: Callable[[PvvxCoordinator], datetime | int | None]
 
 
 SENSORS = (
@@ -32,7 +32,13 @@ SENSORS = (
         key="last_sync",
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda state: state.last_sync,
+        value_fn=lambda coordinator: coordinator.data.last_sync,
+    ),
+    PvvxSensorDescription(
+        key="next_sync",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda coordinator: coordinator.next_sync,
     ),
     PvvxSensorDescription(
         key="drift",
@@ -40,7 +46,7 @@ SENSORS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UnitOfTime.SECONDS,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda state: state.drift_seconds,
+        value_fn=lambda coordinator: coordinator.data.drift_seconds,
     ),
 )
 
@@ -61,7 +67,7 @@ async def async_setup_entry(
 
 
 class PvvxSensor(PvvxEntity, SensorEntity):
-    """Reports a field of the last successful sync."""
+    """Reports a field of the sync state or schedule."""
 
     entity_description: PvvxSensorDescription
 
@@ -74,5 +80,5 @@ class PvvxSensor(PvvxEntity, SensorEntity):
 
     @property
     def native_value(self) -> datetime | int | None:
-        """Return the field from the sync state."""
-        return self.entity_description.value_fn(self.coordinator.data)
+        """Return the field from the coordinator."""
+        return self.entity_description.value_fn(self.coordinator)
