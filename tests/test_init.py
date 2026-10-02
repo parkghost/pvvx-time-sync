@@ -2,6 +2,7 @@
 
 import asyncio
 from collections.abc import Generator
+from dataclasses import replace
 from datetime import timedelta
 import time
 from typing import Any
@@ -60,6 +61,12 @@ def device_in_range() -> Generator[None]:
         ),
     ):
         yield
+
+
+@pytest.fixture(autouse=True)
+def far_from_dst_change(freezer: FrozenDateTimeFactory) -> None:
+    """Schedules span weeks; keep US/Pacific DST changes out of them."""
+    freezer.move_to("2026-06-01T12:00:00+00:00")
 
 
 @pytest.fixture
@@ -245,6 +252,92 @@ async def test_restart_continues_from_last_sync(
     await advance(hass, freezer, timedelta(hours=3, minutes=59))
     sync_time.assert_not_awaited()
     await advance(hass, freezer, timedelta(minutes=2))
+    sync_time.assert_awaited_once()
+
+
+# US/Pacific, the time zone of the test instance, leaves DST on 2026-11-01 at
+# 02:00 PDT.
+PDT = -7 * 3600
+PST = -8 * 3600
+FALL_BACK = dt_util.parse_datetime("2026-11-01T09:00:00+00:00")
+
+
+def stored_state(entry: MockConfigEntry, **data: Any) -> dict[str, Any]:
+    return {"version": 1, "key": f"{DOMAIN}.{entry.entry_id}", "data": data}
+
+
+async def test_dst_change_syncs_at_once_and_keeps_true_drift(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    sync_time: AsyncMock,
+    hass_storage: dict[str, Any],
+) -> None:
+    freezer.move_to(FALL_BACK - timedelta(hours=1))
+    entry = config_entry()
+    key = f"{DOMAIN}.{entry.entry_id}"
+    hass_storage[key] = stored_state(
+        entry,
+        interval_hours=168,
+        last_sync=(FALL_BACK - timedelta(days=1)).isoformat(),
+        drift_seconds=0,
+        utc_offset=PDT,
+    )
+    await setup(hass, entry)
+    assert hass.states.get(entity_id(hass, "sensor", "next_sync")).state == (
+        FALL_BACK.isoformat()
+    )
+
+    await advance(hass, freezer, timedelta(minutes=59))
+    sync_time.assert_not_awaited()
+    # Still on PDT, the device reads an hour ahead of PST.
+    sync_time.return_value = replace(OK, drift_seconds=3600 + 3)
+    await advance(hass, freezer, timedelta(minutes=1, seconds=1))
+
+    sync_time.assert_awaited_once()
+    assert hass.states.get(entity_id(hass, "sensor", "drift")).state == "3"
+    assert hass_storage[key]["data"]["utc_offset"] == PST
+
+
+async def test_overdue_offset_change_syncs_after_startup(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    sync_time: AsyncMock,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Home Assistant was down across the change."""
+    freezer.move_to(FALL_BACK + timedelta(hours=5))
+    entry = config_entry()
+    hass_storage[f"{DOMAIN}.{entry.entry_id}"] = stored_state(
+        entry,
+        interval_hours=168,
+        last_sync=(FALL_BACK - timedelta(days=1)).isoformat(),
+        utc_offset=PDT,
+    )
+    await setup(hass, entry)
+
+    await advance(hass, freezer, timedelta(seconds=31))
+    sync_time.assert_awaited_once()
+
+
+async def test_time_zone_change_syncs(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    sync_time: AsyncMock,
+    hass_storage: dict[str, Any],
+) -> None:
+    entry = config_entry()
+    hass_storage[f"{DOMAIN}.{entry.entry_id}"] = stored_state(
+        entry,
+        interval_hours=168,
+        last_sync=(dt_util.utcnow() - timedelta(hours=1)).isoformat(),
+        utc_offset=int(dt_util.now().utcoffset().total_seconds()),
+    )
+    await setup(hass, entry)
+    await advance(hass, freezer, timedelta(minutes=5))
+    sync_time.assert_not_awaited()
+
+    await hass.config.async_update(time_zone="Asia/Taipei")
+    await advance(hass, freezer, timedelta(seconds=31))
     sync_time.assert_awaited_once()
 
 

@@ -12,8 +12,8 @@ from bleak.exc import BleakError
 
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ADDRESS
-from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
+from homeassistant.const import CONF_ADDRESS, EVENT_CORE_CONFIG_UPDATE
+from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, issue_registry as ir
 from homeassistant.helpers.event import async_call_later
@@ -28,6 +28,7 @@ from .const import (
     RETRY_DELAY,
     default_interval_hours,
 )
+from .local_time import next_offset_change, utc_offset
 from .protocol import PvvxError
 
 _LOGGER = logging.getLogger(__name__)
@@ -69,6 +70,8 @@ class SyncState:
     model: str | None = None
     firmware: str | None = None
     hardware_clock: bool | None = None
+    # UTC offset in seconds of the local time last written to the device.
+    utc_offset: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize for the Store."""
@@ -88,6 +91,7 @@ class SyncState:
             model=data.get("model"),
             firmware=data.get("firmware"),
             hardware_clock=data.get("hardware_clock"),
+            utc_offset=data.get("utc_offset"),
         )
 
 
@@ -140,6 +144,10 @@ class PvvxCoordinator(DataUpdateCoordinator[SyncState]):
         if stored := await self._store.async_load():
             self.data = SyncState.from_dict(stored)
         self._track_presence()
+        # A new time zone can change the UTC offset at once.
+        self.config_entry.async_on_unload(
+            self.hass.bus.async_listen(EVENT_CORE_CONFIG_UPDATE, self._on_config_update)
+        )
         self._reschedule()
 
     @override
@@ -191,14 +199,19 @@ class PvvxCoordinator(DataUpdateCoordinator[SyncState]):
             raise UpdateFailed(str(err)) from err
         except (PvvxError, BleakError, TimeoutError) as err:
             raise UpdateFailed(f"{type(err).__name__}: {err}") from err
-        _LOGGER.debug(
-            "%s: synced, drift before sync %+ds", self.name, result.drift_seconds
-        )
+        now = dt_util.utcnow()
+        offset = utc_offset(now)
+        drift = result.drift_seconds
+        if self.data.utc_offset is not None:
+            # The device still counts in the offset it was last given.
+            drift -= self.data.utc_offset - offset
+        _LOGGER.debug("%s: synced, drift before sync %+ds", self.name, drift)
         details = result.details
         state = replace(
             self.data,
-            last_sync=dt_util.utcnow(),
-            drift_seconds=result.drift_seconds,
+            last_sync=now,
+            drift_seconds=drift,
+            utc_offset=offset,
             model=details.model,
             firmware=details.firmware,
             hardware_clock=details.has_hardware_clock,
@@ -270,16 +283,29 @@ class PvvxCoordinator(DataUpdateCoordinator[SyncState]):
         if self._failures:
             backoff = RETRY_DELAY * 2 ** min(self._failures - 1, 16)
             return min(backoff, self.interval), f"retry {self._failures}"
-        startup = STARTUP_DELAY + timedelta(
+        spread = timedelta(
             seconds=int(self._address.replace(":", ""), 16)
             % (STARTUP_SPREAD_SECONDS + 1)
         )
+        startup = STARTUP_DELAY + spread
         if self.data.last_sync is None:
             return startup, "first sync"
-        due = self.data.last_sync + self.interval - dt_util.utcnow()
+        now = dt_util.utcnow()
+        due = self.data.last_sync + self.interval - now
+        reason = f"every {self.interval_hours} h"
+        if self.data.utc_offset is not None and (
+            change := next_offset_change(now, now + due, self.data.utc_offset)
+        ):
+            # Spread so devices do not all connect at the same moment.
+            due = change - now + spread
+            reason = "UTC offset change"
         if due < startup:
-            return startup, "overdue"
-        return due, f"every {self.interval_hours} h"
+            return startup, f"overdue, {reason}"
+        return due, reason
+
+    @callback
+    def _on_config_update(self, _event: Event) -> None:
+        self._reschedule()
 
     @callback
     def _on_timer(self, _now: datetime) -> None:

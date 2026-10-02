@@ -13,6 +13,7 @@ from homeassistant.util import dt as dt_util
 
 from .client import ConnectFn, GattClient, PvvxClient
 from .coordinator import PvvxConfigEntry, PvvxCoordinator, remove_store
+from .local_time import utc_offset
 from .protocol import PvvxError
 
 PLATFORMS = [Platform.BUTTON, Platform.NUMBER, Platform.SENSOR, Platform.SWITCH]
@@ -20,8 +21,7 @@ PLATFORMS = [Platform.BUTTON, Platform.NUMBER, Platform.SENSOR, Platform.SWITCH]
 
 def local_clock() -> float:
     """Return the local wall-clock time as epoch seconds, in HA's time zone."""
-    offset = dt_util.now().utcoffset()
-    return time.time() + (offset.total_seconds() if offset else 0)
+    return time.time() + utc_offset(dt_util.utcnow())
 
 
 def make_connect(hass: HomeAssistant, address: str, name: str) -> ConnectFn:

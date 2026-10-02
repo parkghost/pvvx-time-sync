@@ -93,6 +93,13 @@ while Home Assistant was down runs shortly after startup. Pressing *Sync time*
 counts as a sync, so the schedule restarts from it. Manual and automatic syncs
 never run at the same time: a press during a running sync waits for its result.
 
+**Daylight saving time.** pvvx firmware has no time zone or DST rules; it
+keeps the local time it was given. When Home Assistant's UTC offset changes
+(a DST transition, or a new time zone in the settings) the next sync moves to
+that moment, so the display is never an hour off until the next scheduled
+sync. Time zones without DST never trigger this. *Drift before sync* leaves the
+offset change out, so it still shows the clock's own drift.
+
 **Retries within a sync.**
 
 - Connecting: up to 3 attempts, each through whichever adapter or proxy sees
