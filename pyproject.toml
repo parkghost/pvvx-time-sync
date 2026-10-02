@@ -1,6 +1,6 @@
 [project]
 name = "pvvx-time-sync"
-version = "0.1.0"
+version = "0.2.0"
 description = "Home Assistant integration that syncs the clock of pvvx-firmware BLE devices"
 requires-python = ">=3.14.2"
 
@@ -79,7 +79,7 @@ typeCheckingMode = "standard"
 reportIncompatibleVariableOverride = "none"
 
 [tool.commitizen]
-version = "0.1.0"
+version = "0.2.0"
 version_files = [
     "pyproject.toml:version",
     "custom_components/pvvx_time_sync/manifest.json:version",
