@@ -8,7 +8,7 @@
 # pvvx BLE Time Sync
 
 [![GitHub Release](https://img.shields.io/github/v/release/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/releases)
-[![HACS](https://img.shields.io/badge/HACS-Custom-blue.svg)](https://hacs.xyz/)
+[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://hacs.xyz/)
 [![HA Version](https://img.shields.io/badge/HA-2026.9.0+-green.svg)](https://www.home-assistant.io/)
 [![GitHub License](https://img.shields.io/github/license/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/blob/main/LICENSE)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/parkghost/pvvx-time-sync)
@@ -61,9 +61,8 @@ an ESPHome Bluetooth proxy with `active: true`.
 
 [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=parkghost&repository=pvvx-time-sync&category=integration)
 
-1. Click the button above, or in HACS open the menu → *Custom repositories* and
-   add `https://github.com/parkghost/pvvx-time-sync` with type *Integration*.
-2. Download **pvvx BLE Time Sync**.
+1. Click the button above, or in HACS search for **pvvx BLE Time Sync**.
+2. Click **Download**.
 3. Restart Home Assistant.
 
 ### Manual
