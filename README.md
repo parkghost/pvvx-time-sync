@@ -57,12 +57,12 @@ sync.
 Requires Home Assistant 2026.9 or newer with a connectable Bluetooth adapter or
 an ESPHome Bluetooth proxy with `active: true`.
 
-### HACS (recommended)
+### Marketplace (recommended)
 
-[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=parkghost&repository=pvvx-time-sync&category=integration)
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=parkghost&repository=pvvx-time-sync&category=integration)
 
-1. Click the button above, or in HACS search for **pvvx BLE Time Sync**.
-2. Click **Download**.
+1. Click the button above, or go to **Settings → Marketplace** and search for **pvvx BLE Time Sync**.
+2. Click **Install**.
 3. Restart Home Assistant.
 
 ### Manual

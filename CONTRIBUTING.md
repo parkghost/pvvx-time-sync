@@ -48,7 +48,7 @@ git push --follow-tags
 Pushing the tag (for example `0.2.0`, without a `v`) runs
 `.github/workflows/release.yml`: it runs the checks, verifies that the tag,
 `pyproject.toml` and `manifest.json` agree, and publishes a GitHub release with
-generated notes and `pvvx_time_sync.zip`. HACS picks the release up.
+generated notes and `pvvx_time_sync.zip`. The Marketplace picks the release up.
 
 ## License
 
