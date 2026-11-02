@@ -15,6 +15,7 @@
       "local_name": "D02_*"
     }
   ],
+  "categories": ["diy_makers"],
   "codeowners": [
     "@parkghost"
   ],
