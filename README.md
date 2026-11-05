@@ -8,7 +8,6 @@
 # pvvx BLE Time Sync
 
 [![GitHub Release](https://img.shields.io/github/v/release/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/releases)
-[![Marketplace](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg)](https://www.home-assistant.io/integrations/marketplace/)
 [![HA Version](https://img.shields.io/badge/HA-2026.11.0+-green.svg)](https://www.home-assistant.io/)
 [![GitHub License](https://img.shields.io/github/license/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/blob/main/LICENSE)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/parkghost/pvvx-time-sync)
