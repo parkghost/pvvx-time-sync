@@ -8,8 +8,8 @@
 # pvvx BLE Time Sync
 
 [![GitHub Release](https://img.shields.io/github/v/release/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/releases)
-[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://hacs.xyz/)
-[![HA Version](https://img.shields.io/badge/HA-2026.9.0+-green.svg)](https://www.home-assistant.io/)
+[![Marketplace](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg)](https://www.home-assistant.io/integrations/marketplace/)
+[![HA Version](https://img.shields.io/badge/HA-2026.11.0+-green.svg)](https://www.home-assistant.io/)
 [![GitHub License](https://img.shields.io/github/license/parkghost/pvvx-time-sync)](https://github.com/parkghost/pvvx-time-sync/blob/main/LICENSE)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/parkghost/pvvx-time-sync)
 
@@ -54,7 +54,7 @@ sync.
 
 ## Installation
 
-Requires Home Assistant 2026.9 or newer with a connectable Bluetooth adapter or
+Requires Home Assistant 2026.11 or newer with a connectable Bluetooth adapter or
 an ESPHome Bluetooth proxy with `active: true`.
 
 ### Marketplace (recommended)

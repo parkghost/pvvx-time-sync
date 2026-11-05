@@ -362,6 +362,32 @@ async def test_unload_and_remove(
     assert key not in hass_storage
 
 
+async def test_renamed_entities_keep_working(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    sync_time: AsyncMock,
+    hass_storage: dict[str, Any],
+) -> None:
+    entry = await setup(hass)
+    registry = er.async_get(hass)
+    old_switch = entity_id(hass, "switch", "auto_sync")
+    old_drift = entity_id(hass, "sensor", "drift")
+    registry.async_update_entity(old_switch, new_entity_id="switch.wall_auto_sync")
+    registry.async_update_entity(old_drift, new_entity_id="sensor.wall_drift")
+    await hass.async_block_till_done()
+    assert hass.states.get(old_switch) is None
+
+    # Coordinator updates still reach the renamed sensor.
+    await advance(hass, freezer, timedelta(seconds=31))
+    assert hass.states.get("sensor.wall_drift").state == "3"
+
+    await hass.services.async_call(
+        "switch", "turn_off", {"entity_id": "switch.wall_auto_sync"}, blocking=True
+    )
+    assert hass.states.get("switch.wall_auto_sync").state == STATE_OFF
+    assert hass_storage[f"{DOMAIN}.{entry.entry_id}"]["data"]["auto_enabled"] is False
+
+
 async def test_own_device_borrows_sensor_name_and_area(
     hass: HomeAssistant, freezer: FrozenDateTimeFactory, sync_time: AsyncMock
 ) -> None:

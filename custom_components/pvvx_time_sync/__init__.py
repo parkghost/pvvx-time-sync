@@ -48,7 +48,7 @@ def make_connect(hass: HomeAssistant, address: str, name: str) -> ConnectFn:
     return connect
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> None:
     """Set up a pvvx device from a config entry."""
     client = PvvxClient(
         make_connect(hass, entry.data[CONF_ADDRESS], entry.title),
@@ -59,12 +59,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> bool
     await coordinator.async_load()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> None:
     """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    await hass.config_entries.async_unload_platforms_or_raise(entry, PLATFORMS)
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: PvvxConfigEntry) -> None:

@@ -8,23 +8,33 @@ requires-python = ">=3.14.2"
 dev = [
     "aiousbwatcher==1.1.2",
     "bleak==3.0.2",
-    "bleak-retry-connector==4.7.0",
+    "bleak-retry-connector==4.7.1",
     "bluetooth-adapters==2.4.0",
     "bluetooth-auto-recovery==1.6.4",
     "bluetooth-data-tools==1.29.24",
     "commitizen>=4.19.0",
     "dbus-fast==5.0.22",
-    "habluetooth==6.26.11",
+    "habluetooth==7.1.2",
     "pre-commit>=4.6.2",
     "pyright>=1.1.414",
     "pytest-cov>=7.1.0",
-    "pytest-homeassistant-custom-component==0.13.367",
+    "pytest-homeassistant-custom-component==0.13.375",
     "ruff",
-    "serialx==1.10.0",
+    "serialx==1.15.1",
 ]
+
+[tool.uv]
+# No pytest-homeassistant-custom-component build targets the integration's
+# Home Assistant floor yet; run its harness against that core instead, with the
+# aiohasupervisor its hassio component needs. Remove this table, and the
+# harness_compat plugin below, once a harness build targets 2026.11.
+override-dependencies = ["homeassistant==2026.11.0", "aiohasupervisor==0.8.1"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+pythonpath = ["."]
+# Loads the harness on 2026.11 until a build targets it; see tests/harness_compat.py.
+addopts = "-p tests.harness_compat"
 testpaths = ["tests"]
 
 [tool.ruff]
